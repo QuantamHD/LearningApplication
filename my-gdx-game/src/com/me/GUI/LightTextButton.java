@@ -22,20 +22,21 @@ public class LightTextButton extends Actor {
 		this.font     = font;
 		this.text     = text;
 		this.renderer = renderer;
+		float x = getX();
+		float y = getY();
 		this.setBounds(
-				80,
-				300, 
-				149, 
-				23);
+				x,
+				y, 
+				getTextBounds().width, 
+				getTextBounds().height);
 
-		this.addListener(new InputListener() {
-			
+		addListener(new InputListener() {
+		
 			public boolean touchDown(
 					InputEvent event,
 					float x, float y,
 					int pointer, int button) {
-				System.out.println("Hello World");
-				
+			System.out.println("hello World");	
 				return true;
 			}
 
@@ -44,7 +45,7 @@ public class LightTextButton extends Actor {
 					float x, float y,
 					int pointer, int button) {
 				
-				
+				System.out.println("hello World");
 				drawDark  = true;
 				drawLight = false;
 			}
@@ -55,8 +56,7 @@ public class LightTextButton extends Actor {
 					float x, float y, 
 					int pointer,
 					Actor fromActor) {
-				
-				System.out.println("hello World");
+				System.out.println("Hello World");
 				drawLight = true;
 			}
 
@@ -73,15 +73,19 @@ public class LightTextButton extends Actor {
 	}
 
 	public void draw(SpriteBatch batch, float parentAlpha) {
-		drawMenuBar(batch);
-		
+		drawTextHighLights(batch);
 		font.draw(
 				batch,//SpriteBatch 
 				text, //String "TEXT PASSED TO CLASS"
-				getX(), getY());//THE X AND Y LOCATION OF THE ACTOR
+				getX(), getY()+getTextBounds().height);//THE X AND Y LOCATION OF THE ACTOR
 	}
 	
-	public void drawMenuBar(SpriteBatch batch){
+	public void act(float delta){
+		super.act(delta);
+		this.setBounds(getX(), getY(), getTextBounds().width, getTextBounds().height);
+	}
+	
+	public void drawTextHighLights(SpriteBatch batch){
 		float x      = getX();// X LOCATION OF THE MENU BAR
 		float y      = getY();// Y LOCATION OF THE MENU BAR
 		float width  = getTextBounds() . width;//  WIDTH  OF THE MENU BAR 
@@ -104,9 +108,9 @@ public class LightTextButton extends Actor {
 			//IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT
 			
 			renderer.rect(
-					x , y,//   SETS THE X ANY Y LOCAITION OF THE RECTANGLE TO BE DRAWN
-					width , // SETS THE WIDTH OF THE RECTANGLE 
-					height);// SETS THE HEIGHT OF THE RECTANGLE 
+					x , y+getTextBounds().height,//   SETS THE X ANY Y LOCAITION OF THE RECTANGLE TO BE DRAWN
+					width, // SETS THE WIDTH OF THE RECTANGLE 
+					-height);// SETS THE HEIGHT OF THE RECTANGLE 
 			
 			//IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT IMPORTANT 
 			

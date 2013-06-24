@@ -39,14 +39,15 @@ public class MenuBar extends Group {
 		generator.dispose();
 
 		a = new LightTextButton("Hello World", font, renderer);
-		a.setX(80);
-		a.setY(200);
+		a.setX(200);
+		a.setY(24);
+		this.addActor(a);
 		
 	}
 
 	@Override
 	public void draw(SpriteBatch batch, float parentAlpha) {
-
+		
 		selectBar.draw(batch, parentAlpha);
 
 		batch.end();
@@ -58,7 +59,7 @@ public class MenuBar extends Group {
 		renderer.end();
 		batch.begin();
 		drawChildren(batch, parentAlpha);
-		a.draw(batch, parentAlpha);
+		
 	}
 
 	public void addButton(LightButton button) {
@@ -68,16 +69,14 @@ public class MenuBar extends Group {
 	@Override
 	public void act(float delta) {
 		selectBar.act(delta);
-		a.act(delta);
+		
+		
+		positionButtons(delta);
+		menuBarControls();
+		
+	}
 
-		for (Actor actor : getChildren()) {
-			actor.setX(8);
-			actor.setY(Gdx.app.getGraphics().getHeight() - (count * (64 + 35))
-					- 100);
-			if (actor instanceof LightButton)
-				count++;
-			actor.act(delta);
-		}
+	public void menuBarControls(){
 		if (Gdx.input.isTouched()) {
 
 			if (selected()) {
@@ -88,14 +87,27 @@ public class MenuBar extends Group {
 		if (noActorsSelected() && selectBar.getX() > 1 && menuBarClicked) {
 			selectBar.addAction(Actions.moveTo(0, 0, 0.2f));
 		}
-
+	}
+	
+	public void positionButtons(float delta){
+		for (Actor actor : getChildren()) {
+			if (actor instanceof LightButton){
+			actor.setX(8);
+			actor.setY(Gdx.app.getGraphics().getHeight() - (count * (64 + 35))
+					- 100);
+				count++;
+			}
+			
+			actor.act(delta);
+		}
+		
 		count = 0;
 	}
-
+	
 	public boolean noActorsSelected() {
 		for (Actor act : getChildren()) {
 			if(act instanceof LightButton){
-				LightButton button = (LightButton) (act);
+				LightButton button = (LightButton)(act);
 				if (button.drawBlue) {
 					return false;
 				}
@@ -134,12 +146,10 @@ public class MenuBar extends Group {
 		if (left1 > right2)
 			return false; // no collision
 
-		System.out.println("I am true");
 		return true;
 	}
 	public void drawChildren(SpriteBatch batch, float parentAlpha){
 		for (Actor actor : getChildren()) {
-			if (actor instanceof LightButton)
 				actor.draw(batch, parentAlpha);
 		}
 	}
