@@ -1,8 +1,9 @@
-package com.me.GUI;
+package com.me.GUI.Main;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -10,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.Array;
 
 public class LightButton extends Actor {
 	protected Texture       buttonImg     = null;
@@ -17,16 +19,22 @@ public class LightButton extends Actor {
 	protected boolean       drawLightBlue = false;
 	protected ShapeRenderer renderer      = null;
 	protected SelectionBar  selectBar     = null;
+	protected String        buttons       = null;
+	protected Array<LightTextButton> lightTextButtons;
+	
 
-	public LightButton(String path) {
+	public LightButton(String path,String buttons) {
 		// selectBar = new SelectionBar();
-		renderer  = new ShapeRenderer();
-		buttonImg = new Texture(path);
-		setBounds(getX(),
+		renderer  = new ShapeRenderer();//INITIALZES THE SHAPERENDERER
+		buttonImg = new Texture(path);// GETS THE BUTTON IMAGE FOR THE PASSED PATH
+		setBounds(getX(),//SETS THE BOUNDS TO ALLOW THE BUTTON TO BE CLICKED
 				  getY(), 
 				  buttonImg.getWidth(), 
 				  buttonImg.getHeight());
-
+		
+		this.buttons = buttons;//A STRING CONTAING WORDS AND @ SYMBOLS WHICH IS WHAT THE BUTTONS ARE CREATED OUT OF
+		this.lightTextButtons = new Array<LightTextButton>();
+		
 		addListener(new InputListener() {
 			
 			public boolean touchDown(				
@@ -84,7 +92,29 @@ public class LightButton extends Actor {
 	@Override
 	public void act(float delta) {
 		super.act(delta);
-		turnOffButton();
+		turnOffButton();// TURNS OF THE DARK HIGHLIGHT IF ONE OF THE BUTTONS IS DOWN AND CLICKED SOMEWHERE ELSE
+		
+	}
+	
+	public String getButtonNames(){
+		return this.buttons;
+	}
+	
+	public Array<LightTextButton> getSelectBarButtons(ShapeRenderer renderer, BitmapFont font){//could Be Modifed to work better
+		this.lightTextButtons = new Array<LightTextButton>();
+	
+		String temp = "";
+		for(int i = 0; i<buttons.length(); i++){
+			if(buttons.substring(i, i+1).equals("@")){
+				lightTextButtons.add(new LightTextButton(temp,font,renderer));
+				temp = "";
+			}
+			else
+				temp+=buttons.substring(i,i+1);
+			
+		}
+		lightTextButtons.get(0).touchable(false);
+		return this.lightTextButtons;
 	}
 
 	public void drawButtonHighLights(SpriteBatch batch){
@@ -122,16 +152,21 @@ public class LightButton extends Actor {
 			top2 = my;
 			bottom1 = getY() + getHeight();
 			bottom2 = my;
-
-			if (bottom1 < top2)
+			
+			boolean selectBarClicked = !MenuBar.selectBar.rectangle.contains(Gdx.input.getX(), Gdx.input.getY());
+			
+			
+ 
+			if (bottom1 < top2&& selectBarClicked && MenuBar.goDown)
 				drawBlue = false; 
-			if (top1 > bottom2)
+			if (top1 > bottom2&& selectBarClicked && MenuBar.goDown)
 				drawBlue = false; 
-
-			if (right1 < left2)
+			if (right1 < left2&& selectBarClicked && MenuBar.goDown)
 				drawBlue = false; 
-			if (left1 > right2)
+			if (left1 > right2&& selectBarClicked && MenuBar.goDown)
 				drawBlue = false; 
-		}
+		} 
 	}
+	
+
 }

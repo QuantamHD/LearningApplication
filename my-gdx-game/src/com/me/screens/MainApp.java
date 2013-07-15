@@ -55,7 +55,7 @@ public class MainApp extends AbstractScreen {
 		test = new Texture("data/TestImage.png");
 		spashImage = new Image(test);
 		stage.addActor(spashImage);
-		Gdx.input.setInputProcessor(stage);
+		Gdx.input.setInputProcessor(stage); 
 		game.setScreen(new CreateScreen(game));
 	}
 

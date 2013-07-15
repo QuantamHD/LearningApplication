@@ -1,7 +1,6 @@
-package com.me.GUI;
+package com.me.GUI.Main;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -10,44 +9,43 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 public class MenuBar extends Group {
 	protected     ShapeRenderer renderer   = null;
 	public static SelectionBar selectBar   = null;
 	private       BitmapFont font          = null;
-	private       LightTextButton a        = null;
+	public static FreeTypeFontGenerator generator;
 	private       int count                = 0;
 	public static boolean menuBarClicked   = false;
+	private 	  ButtonGroup selectBarButtons = null;
+	private		  LightButton currentInstance;
+    static boolean goDown = true;
+
+	
 
 	public MenuBar() {
 		renderer  = new ShapeRenderer();
 		selectBar = new SelectionBar();
-
+		
+		
 		setBounds(
 				getX(), getY(), 
 				80, 
 				Gdx.app.getGraphics().getHeight());
 
-		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(
+		generator = new FreeTypeFontGenerator(
 				Gdx.files.internal
 				("data/Kelson.ttf"));
+		font = generator.generateFont(42);
+		selectBarButtons = new ButtonGroup();
+		this.addActor(selectBarButtons);
 
-		font = generator.generateFont(30);
-		generator.dispose();
 
-		a = new LightTextButton("Hello World", font, renderer);
-		a.setX(200);
-		a.setY(24);
-		this.addActor(a);
-		
 	}
 
 	@Override
-	public void draw(SpriteBatch batch, float parentAlpha) {
-		
+	public void draw(SpriteBatch batch, float parentAlpha) {		
 		selectBar.draw(batch, parentAlpha);
 
 		batch.end();
@@ -58,52 +56,64 @@ public class MenuBar extends Group {
 		renderer.rect(0, 0, 80, Gdx.app.getGraphics().getHeight());
 		renderer.end();
 		batch.begin();
-		drawChildren(batch, parentAlpha);
+		drawChildren123(batch, parentAlpha);
 		
+
 	}
 
 	public void addButton(LightButton button) {
 		this.addActor(button);
 	}
+	
+	public static void dontGoDown(){
+		goDown = false;
+	}
+	
+	public static void goDown(){
+		goDown = true;
+	}
 
 	@Override
 	public void act(float delta) {
 		selectBar.act(delta);
-		
-		
+		selectBarButtons.act(delta);
 		positionButtons(delta);
+		if(goDown)
 		menuBarControls();
-		
+		chageMenuButtons();
 	}
 
 	public void menuBarControls(){
 		if (Gdx.input.isTouched()) {
-
-			if (selected()) {
-				menuBarClicked = true;
-			} else
-				menuBarClicked = false;
-		} 
-		if (noActorsSelected() && selectBar.getX() > 1 && menuBarClicked) {
-			selectBar.addAction(Actions.moveTo(0, 0, 0.2f));
+			if (noActorsSelected() && selectBar.getX() > 1 && SelectBarChecked()) {
+				selectBar.addAction(Actions.moveTo(0, 0, 0.2f));
+			}
 		}
+	}
+	
+
+	
+
+	
+	public boolean SelectBarChecked(){
+		return !selectBar.rectangle.contains(Gdx.input.getX(), Gdx.input.getY());
 	}
 	
 	public void positionButtons(float delta){
 		for (Actor actor : getChildren()) {
 			if (actor instanceof LightButton){
-			actor.setX(8);
-			actor.setY(Gdx.app.getGraphics().getHeight() - (count * (64 + 35))
-					- 100);
+				actor.setX(8);
+				actor.setY(Gdx.app.getGraphics().getHeight() - (count * (actor.getHeight()*1.45f))
+						- 100);
 				count++;
 			}
-			
+
 			actor.act(delta);
 		}
-		
+
 		count = 0;
 	}
-	
+
 	public boolean noActorsSelected() {
 		for (Actor act : getChildren()) {
 			if(act instanceof LightButton){
@@ -123,15 +133,15 @@ public class MenuBar extends Group {
 		float top1, top2;
 		float bottom1, bottom2;
 		float mx = Gdx.input.getX();
-		float my = -Gdx.input.getY() + Gdx.app.getGraphics().getHeight();
+		float my = Gdx.app.getGraphics().getHeight() - Gdx.input.getY();
 
-		left1 = selectBar.getX();
+		left1 = selectBar.getY();
 		left2 = mx;
-		right1 = selectBar.getX() + 320;
+		right1 = selectBar.getY() + selectBar.getHeight();
 		right2 = mx;
-		top1 = 0;
+		top1 = selectBar.getX();
 		top2 = my;
-		bottom1 = 720;
+		bottom1 =selectBar.getX() - Gdx.app.getGraphics().getWidth();
 		bottom2 = my;
 
 		if (bottom1 < top2)
@@ -148,9 +158,31 @@ public class MenuBar extends Group {
 
 		return true;
 	}
-	public void drawChildren(SpriteBatch batch, float parentAlpha){
+
+	public void drawChildren123(SpriteBatch batch, float parentAlpha){
 		for (Actor actor : getChildren()) {
-				actor.draw(batch, parentAlpha);
+			actor.draw(batch, parentAlpha);
+		}
+	}
+
+	public void chageMenuButtons(){
+		for(Actor actor: getChildren()){
+			if(actor instanceof LightButton){
+				LightButton button = (LightButton)(actor);
+				if(button.drawBlue){
+
+					if(!(currentInstance == button)){
+						this.selectBarButtons.flushButtons();
+						this.selectBarButtons.addButton(button.getSelectBarButtons(renderer, font));
+					}
+
+					currentInstance = button;
+				}
+			}
+		}
+		if(noActorsSelected()){
+			this.selectBarButtons.flushButtons();
+			currentInstance = null;
 		}
 	}
 }

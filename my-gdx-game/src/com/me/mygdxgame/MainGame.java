@@ -1,14 +1,16 @@
 package com.me.mygdxgame;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.me.screens.CreateScreen;
 import com.me.screens.MainApp;
+import com.me.screens.MultipleChoiceScreen;
 import com.me.screens.ViewingScreen;
 
 public class MainGame extends Game {
-
+	
+	
+	
 	public MainApp getMainApp() {
 		return new MainApp(this);
 	}
@@ -19,6 +21,10 @@ public class MainGame extends Game {
 
 	public ViewingScreen getViewingScreen() {
 		return new ViewingScreen(this);
+	}
+	
+	public MultipleChoiceScreen getMultileChoiceScreen(){
+		return new MultipleChoiceScreen(this);
 	}
 
 	public MainGame() {

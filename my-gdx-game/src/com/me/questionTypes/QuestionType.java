@@ -1,6 +1,5 @@
 package com.me.questionTypes;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.me.resources.Images;
 
@@ -34,4 +33,5 @@ public class QuestionType {
 	public Image getImage() {
 		return this.img;
 	}
+	
 }
