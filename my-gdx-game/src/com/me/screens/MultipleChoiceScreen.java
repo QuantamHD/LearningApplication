@@ -26,13 +26,15 @@ public class MultipleChoiceScreen extends AbstractScreen {
 	}
 	public MultipleChoiceScreen(MainGame game) {
 		super(game);
-		
 	}	
 
 	@Override
 	public void render(float delta) {
 		super.render(delta);
-		
+		for(LightTextField textF: skin.getTextFields()){
+			if(textF.youShouldListenToMe())
+				stage.setKeyboardFocus(textF);
+		}
 	}
 
 	@Override
@@ -43,7 +45,8 @@ public class MultipleChoiceScreen extends AbstractScreen {
 		MenuBar.goDown();  
 		stage.addActor(skin);
 		for(LightTextField textF: skin.getTextFields()){
-			stage.setKeyboardFocus(textF);
+			if(textF.youShouldListenToMe())
+				stage.setKeyboardFocus(textF);
 		}
 		this.setColor(0.85882f, 0.26666f, 0.21568f, 1f);
 	}
